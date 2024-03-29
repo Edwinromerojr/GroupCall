@@ -12,3 +12,30 @@ let client;
 const queryString = window.location.search
 const urlParams = new URLSearchParams(queryString)
 let roomId = urlParams.get('room')
+
+if(!roomId){
+    roomId = 'main'
+}
+
+let localTrack = []
+let remoteUsers = {}
+
+let joinRoomInit = async () => {
+    client = AgoraRTC.createClient({mode:'rtc', codec:'vp8'})
+    await client.join(APP_ID, roomId, token, uid)
+
+    joinStream()
+}
+
+let joinStream = async () => {
+    localTracks = await AgoraRtc.createMicrophoneAndCameraTracks()
+
+    let player = `<div class="video__container" id="user-container-${uid}">
+                    <div class="video-player" id="user-${uid}></div>
+                </div>`
+    document.getElementById('streams__container').insertAdjacentHTML('beforeend', player)
+
+    localTracks[1].play(`user-${uid}`)
+}
+
+joinRoomInit()
